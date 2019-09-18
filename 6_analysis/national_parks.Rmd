@@ -90,7 +90,7 @@ p_top_four_parks <- top_parks %>%
   scale_x_continuous(name = "Year", breaks = seq(1900, 2010, 20)) +
   scale_y_continuous(name = "Number of Visitors (M)", breaks = seq(0, 12, 2)) +
   scale_color_manual(values=c("darkorange3", "olivedrab", "steelblue3", "slateblue3")) +
-  ggtitle("Vistors to Top National Parks") +
+  ggtitle("Visitors to Top National Parks") +
   theme(plot.title = element_text(lineheight=.8, face="bold", size = 16),
         strip.text.x = element_text(size = 12, face = "bold")) +
   my.functions::theme_awesome()
