@@ -9,17 +9,19 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Libs
 ```{r}
 library(tidyverse)
 library(here)
 library(gganimate)
 ```
 
+# Data 
 ```{r}
 park_visits <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-17/national_parks.csv")
 ```
 
-Total park visits 
+# Fig - Total Parl Visits 
 ```{r}
 park_visits$year <- as.numeric(park_visits$year)
 
@@ -41,7 +43,7 @@ p_total_visits <- park_visits %>%
 anim_save("total_park_visits.gif", p_total_visits)
 ```
 
-Average visitors since 1995 for the 25 most popular national parks 
+# Fig - Average visitors since 1995 for the 25 most popular national parks 
 ```{r}
 p_top_25 <- park_visits %>% 
   filter(unit_type == "National Park",
@@ -65,7 +67,7 @@ p_top_25 <- park_visits %>%
 ggsave(p_top_25, file = "top_25_parks.png")
 ```
 
-Number of visitors of top four parks 
+# Fig - Number of visitors of top four parks 
 ```{r}
 top_four <- c("GRSM", "GRCA", "YOSE", "OLYM")
 
@@ -74,11 +76,8 @@ national_parks <- park_visits %>%
          !year == "Total") %>% 
    mutate(unit_name = str_remove(unit_name, "National Park"))
 
-
 top_parks <- national_parks %>% 
   filter(unit_code %in% top_four)
-
-library(gganimate)
 
 p_top_four_parks <- top_parks %>% 
   mutate(visitors = visitors / 1000000) %>% 
@@ -97,4 +96,3 @@ p_top_four_parks <- top_parks %>%
  
 anim_save("top_four_parks.gif", p_top_four_parks)
 ```
-
