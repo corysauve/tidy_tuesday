@@ -22,9 +22,9 @@ My contributions to the [TidyTuesday](https://github.com/rfordatascience/tidytue
 
 ### [2019-09](https://github.com/corysauve/tidytuesday/blob/main/figures/2019-09_National-Parks/): National Parks
 
-![./figures/2019-09_National-Parks/top_25_parks.png](https://github.com/corysauve/tidytuesday/blob/main/figures/2019-09_National-Parks/top_25_parks.png)
+![./figures/2019-09_National-Parks/top_25_parks.png](https://github.com/corysauve/tidytuesday/blob/master/figures/2019-09_National-Parks/top_25_parks.png)
 
-![./figures/2019-09_National-Parks/top_four_parks.gif](https://github.com/corysauve/tidytuesday/blob/main/figures/2019-09_National-Parks/top_four_parks.gif)
+![./figures/2019-09_National-Parks/top_four_parks.gif](https://github.com/corysauve/tidytuesday/blob/master/figures/2019-09_National-Parks/top_four_parks.gif)
 
-![./figures/2019-09_National-Parks/total_park_visits.gif](https://github.com/corysauve/tidytuesday/blob/main/figures/2019-09_National-Parks/total_park_visits.gif)
+![./figures/2019-09_National-Parks/total_park_visits.gif](https://github.com/corysauve/tidytuesday/blob/master/figures/2019-09_National-Parks/total_park_visits.gif)
 
