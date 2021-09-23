@@ -9,7 +9,7 @@ My contributions to the [TidyTuesday](https://github.com/rfordatascience/tidytue
 <br>
 
 <details>
-  <summary>Visualization List</summary>
+  <summary>Visualization List (click to expand)</summary>
   
 <!-- toc -->
 * **2019**
