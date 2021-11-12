@@ -1,0 +1,89 @@
+---
+title: "Great Lakes Fishes"
+author: "Cory Sauve"
+date: "9/23/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Purpose 
+
+This notebook visualizes the TidyTuesday data from 2021-06-08 on Great Lakes fishes.
+
+# Libs 
+```{r libs}
+library(tidyverse)
+library(janitor)
+library(here)
+library(poissoned)
+```
+
+# Data Import  
+```{r data}
+fishing <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-06-08/fishing.csv')
+```
+
+# Data Cleaning 
+```{r}
+fishes <- c("Alewife", "Chubs", "Lake Whitefish", "Rainbow Smelt", 
+            "Suckers", "Walleye", "Yellow Perch")
+
+michigan_catch <- fishing %>% 
+  janitor::clean_names() %>% 
+  mutate(decade = 10 * year %/% 10) %>% 
+  filter(lake == "Michigan", region == "U.S. Total") %>% 
+  group_by(decade, species) %>% 
+  mutate(total_catch = sum(values, na.rm = TRUE), 
+         median_catch = median(values, na.rm = TRUE)) %>% 
+  distinct(decade, species, .keep_all = TRUE) %>% 
+  ungroup() %>% 
+  select(decade, species, total_catch, median_catch) %>% 
+  drop_na() %>% 
+  filter(species %in% fishes, decade >= 1950) %>% 
+  mutate(decade = paste(decade, "s", sep=""))
+
+michigan_catch_poissoned <- michigan_catch %>% 
+  rowwise() %>% 
+  mutate(t = sqrt(median_catch / 50), 
+         pnts = list(poisson_disc(ncols = t, nrows = t, cell_size = 1 / t))) %>% 
+  ungroup() %>%
+  unnest(pnts) %>% 
+  mutate(angle = runif(1, 0, 360)) %>% 
+  ungroup() %>% 
+  filter(species %in% fishes, decade >= 1950)
+```
+
+```{r}
+fish_color = "#18436E"
+bg_color = "#223435"
+bg_color2 = "#E9E8E1"
+
+plot <- ggplot() +
+  geom_tile(data = michigan_catch_poissoned, aes(0.5, 0.5, width = 1.07, height = 1.07), fill = "grey97", color = "grey97", size = 0.5, stat = "unique") +
+  geom_text(data = michigan_catch, aes(0.5, -0.23, label = round(median_catch)), alpha = 1, fontface = "bold", size = 7, vjust = 0, color = "grey97") +
+  geom_text(data = michigan_catch_poissoned, aes(x, y, label = "➤", angle = angle), size = 2.5, color = fish_color)+
+  facet_grid(decade ~ species) +
+  coord_fixed(clip = "off") +
+  labs(title = "Lake Michigan Total Catch",
+       subtitle = "Median catch by decade in thousand pounds",
+       caption = "Source: Great Lakes Fishery Commission | Figure: Cory Sauve") +
+  theme_bw(base_size = 15) +
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_rect(fill = bg_color),
+        strip.text = element_text(size = 14, face = "bold"),
+        strip.background = element_blank(),
+        strip.text.x = element_text(color = bg_color),
+        strip.text.y = element_text(color = bg_color, angle = -90),
+        plot.background = element_rect(fill = bg_color2, color = NA),
+        plot.title = element_text(size = 40, color = bg_color),
+        plot.subtitle = element_text(size = 20, color = bg_color), 
+        plot.caption = element_text(size = 12, color = bg_color))
+
+#ggsave(plot, filename = here("figures/2021-06-08_Great-Lakes-Fishes", "great_lakes_fish.png"), height = 14, width = 14, dpi = 500)
+```
