@@ -23,7 +23,7 @@ My contributions to the [TidyTuesday](https://github.com/rfordatascience/tidytue
 
 ### [2021-06](https://github.com/corysauve/tidytuesday/blob/main/figures/2021-06-08_Great-Lakes-Fishes/): Great Lakes Fishes 
 
-![./figures/2019-06-08_Great-Lakes-Fishes/great_lakes_fish.png](https://github.com/corysauve/tidytuesday/blob/main/figures/2021-06-08_Great-Lakes-Fishes/great_lakes_fish.png)
+![./figures/2019-06-08_Great-Lakes-Fishes/great_lakes_fish.png](https://github.com/corysauve/tidytuesday/blob/master/figures/2021-06-08_Great-Lakes-Fishes/great_lakes_fish.png)
 
 ### [2019-09](https://github.com/corysauve/tidytuesday/blob/main/figures/2019-09_National-Parks/): National Parks
 
