@@ -21,7 +21,9 @@ My contributions to the [TidyTuesday](https://github.com/rfordatascience/tidytue
 
 ***
 
-### [2021-06](https://github.com/corysauve/tidytuesday/blob/main/figures/2021-06-08_Great-Lakes-Fishes/): Great Lakes Fishes 
+### [2021-06](https://github.com/corysauve/tidytuesday/blob/main/figures/2021-06-08_Great-Lakes-Fishes/): Great Lakes Fishes
+
+Inspiration from a wonderful TidyTuesday submission by Georgios Karamanis [here](https://twitter.com/geokaramanis/status/1447913599712825349)
 
 ![./figures/2019-06-08_Great-Lakes-Fishes/great_lakes_fish.png](https://github.com/corysauve/tidytuesday/blob/master/figures/2021-06-08_Great-Lakes-Fishes/great_lakes_fish.png)
 
