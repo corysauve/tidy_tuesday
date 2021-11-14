@@ -1,0 +1,63 @@
+---
+title: "2021-07-20_US-Droughts"
+author: "Cory Sauve"
+date: "11/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libs 
+```{r}
+library(tidyverse)
+library(here)
+library(geofacet)
+library(showtext)
+library(ggtext)
+```
+
+# Data 
+
+## Import 
+```{r}
+drought <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-20/drought.csv')
+```
+
+## Cleaning 
+```{r}
+drought_clean <- drought %>% 
+  mutate(drought_lvl = case_when(drought_lvl == "None" ~ "No Drought", TRUE ~ "Drought")) %>% 
+  group_by(state_abb, valid_start, drought_lvl) %>% 
+  summarize(area_pct = sum(area_pct)) %>% 
+  ungroup() 
+```
+
+## Figure 
+```{r}
+font_add(family = "Charter", regular = "C:/My-Fonts\Charter\TTF/Charter-Regular", 
+         bold =  regular = "C:/My-Fonts\Charter\TTF/Charter-Bold")
+
+plot <- drought_clean %>% 
+  filter(drought_lvl == "Drought") %>% 
+  ggplot() + 
+  geom_area(aes(x = valid_start, y = area_pct), fill = "#E39322") +
+  facet_geo(~state_abb) +
+  labs(title = "Percent of U.S. land area under drought conditions", 
+       subtitle = "Figure shows the land area under drought conditions in each state from July 2001 to July 2021.",
+       caption = "Data: U.S. Drought Monitor | Design: Cory Sauve") +
+  theme_light() + 
+  theme(plot.title = element_text(size = 80, color = "black", face = "bold", family = "Charter"),
+        plot.subtitle = element_text(size = 65, family = "Charter"),
+        axis.title = element_blank(), 
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        strip.background = element_blank(), 
+        strip.text = element_text(size = 48, color = "black", face = "bold", hjust = 0, family = "Charter"), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        plot.caption = element_text(size = 48, family = "Charter"))
+
+ggsave(last_plot(), filename = here("figures/2021-07-20_US-Droughts", "us_droughts_figure.png"), height = 8, width = 14, dpi = 500)
+```
