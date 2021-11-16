@@ -14,6 +14,8 @@ My contributions to the [TidyTuesday](https://github.com/rfordatascience/tidytue
 
 ![./figures/2021-11-15_Black-in-Data/dubois1.png](https://github.com/corysauve/tidytuesday/blob/master/figures/2021-11-15_Black-in-Data/dubois1.png)
 
+![./figures/2021-11-15_Black-in-Data/dubois4.png](https://github.com/corysauve/tidytuesday/blob/master/figures/2021-11-15_Black-in-Data/dubois4.png)
+
 ### [2021-07](https://github.com/corysauve/tidytuesday/blob/main/figures/2021-07-20_US-Droughts/): U.S. Droughts
 
 ![./figures/2019-06-08_Great-Lakes-Fishes/great_lakes_fish.png](https://github.com/corysauve/tidytuesday/blob/master/figures/2021-07-20_US-Droughts/us_droughts_figure.png)

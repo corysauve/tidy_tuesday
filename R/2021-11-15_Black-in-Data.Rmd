@@ -1,0 +1,131 @@
+---
+title: "2021-11-15_Black-in-Data"
+author: "Cory Sauve"
+date: "11/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libs 
+```{r}
+library(here)
+library(tidyverse)
+library(showtext)
+library(patchwork)
+```
+
+# Data Import 
+```{r}
+georgia_pop <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-16/georgia_pop.csv')
+census <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-16/census.csv')
+furniture <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-16/furniture.csv')
+city_rural <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-16/city_rural.csv')
+income <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-16/income.csv')
+freed_slaves <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-16/freed_slaves.csv')
+occupation <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-16/occupation.csv')
+conjugal <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-16/conjugal.csv')
+```
+
+# Figures 
+
+## Font 
+```{r}
+font_add_google("Public Sans", "Public Sans")
+showtext_auto()
+```
+
+## 
+
+
+## Challenge 1 - Georgia Population 
+```{r}
+georgia_pop_clean <- georgia_pop %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(colored:white, names_to = "race", values_to = "prop") 
+
+georgia_pop_white <- georgia_pop_clean %>% filter(race == "white")
+georgia_pop_colored <- georgia_pop_clean %>% filter(race == "colored")
+
+p1 <- ggplot() + 
+  geom_path(data = georgia_pop_white, aes(x = prop, y = year), linetype = "dashed", color = "black", size = 0.75) + 
+  geom_path(data = georgia_pop_colored, aes(x = prop, y = year), color = "black", size = 0.75) +
+  geom_text(aes(x = 78, y = 1783, label = "Colored"), size = 14) +
+  geom_segment(aes(x = 99, xend = 85, y = 1783, yend = 1783), size = 1) +
+  geom_text(aes(x = 20, y = 1783, label = "White"), size = 14) +
+  geom_segment(aes(x = 14.8, xend = 0, y = 1783, yend = 1783), size = 0.5, linetype = "dashed") +
+  coord_cartesian(xlim = c(100, 0), ylim = c(1790, 1890), clip="off") + 
+  scale_x_reverse(breaks = seq(0, 100, 5), expand = c(0, 0)) +
+  scale_y_continuous(breaks = seq(1790, 1890, 10), expand = c(0, 0)) +
+  labs(title = "COMPARATIVE INCREASE OF WHITE AND COLORED",
+       subtitle = "POPULATION OF GEORGIA.", 
+       x = "PERCENTS", 
+       y = "", 
+       caption = "Data: #DuBoisChallenge | Design: Cory Sauve") +
+  theme_light() +
+  theme(panel.background = element_rect(fill = "#EAD1B9"),
+        plot.background = element_rect(fill = "#EAD1B9", color = NA),
+        plot.title = element_text(hjust = 0.5, vjust = 3, size = 65), 
+        plot.subtitle = element_text(hjust = 0.5, vjust = 3, size = 65),
+        panel.grid.minor = element_blank(), 
+        panel.grid.major = element_line(color = "#EFB9A3", size = 0.4), 
+        panel.border = element_rect(size = 0.1, color = "black"),
+        axis.ticks = element_blank(), 
+        axis.text.y = element_text(size = 50),
+        axis.text.x = element_text(size = 40),
+        axis.title.x = element_text(size = 40, vjust = -2),
+        plot.margin=unit(c(1,1,1.5,1),"cm"), 
+        plot.caption = element_text(vjust = -22, hjust = 1.15, size = 40))
+
+ggsave(last_plot(), filename = here("figures/2021-11-15_Black-in-Data.png"), height = 8, width = 5, dpi = 500)
+```
+
+## Challenge 4 - Freed Slaves
+```{r}
+p4 <- freed_slaves %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(slave:free, names_to = "type", values_to = "prop") %>% 
+  ggplot(aes(x = year, y = prop, fill = type)) +
+  geom_area(position = "stack") + 
+  geom_text(aes(x = 1830, y= 60, label = "SLAVES"), color = "white", size = 30, fontface = "bold") +
+  geom_text(aes(x = 1830, y= 55, label = "ESCLAVES"), color = "white", size = 30, fontface = "bold") +
+  geom_text(aes(x = 1790.5, y = 93, label = "8%"), color = "black", size = 15, fontface = "bold") +
+  geom_text(aes(x = 1800, y = 90, label = "11%"), color = "black", size = 15, fontface = "bold") +
+  geom_text(aes(x = 1810, y = 88, label = "13.5%"), color = "black", size = 15, fontface = "bold") +
+  geom_text(aes(x = 1820, y = 88.5, label = "13%"), color = "black", size = 15, fontface = "bold") +
+  geom_text(aes(x = 1830, y = 87.5, label = "14%"), color = "black", size = 15, fontface = "bold") +
+  geom_text(aes(x = 1840, y = 88.5, label = "13%"), color = "black", size = 15, fontface = "bold") +
+  geom_text(aes(x = 1850, y = 89, label = "12%"), color = "black", size = 15, fontface = "bold") +
+  geom_text(aes(x = 1860, y = 90.5, label = "11%"), color = "black", size = 15, fontface = "bold") +
+  geom_text(aes(x = 1870, y = 90, label = "100%"), color = "black", size = 15, fontface = "bold") +
+  coord_cartesian(xlim = c(1790, 1870), clip="off") +
+  scale_fill_manual(values = c("#057847", "#191918")) +
+  scale_x_continuous(position = "top", breaks = seq(1790, 1870, 10), expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  labs(title = "PROPORTION OF FREEMEN AND SLAVES AMONG AMERICAN NEGROES .", 
+       subtitle = "PROPORTION DES NEGRES LIBRES ET DES ESCLAVES EN AMERIQUE . \n DONE BY ATLANTA UNIVERSITY.", 
+       caption = "Data: #DuBoisChallenge | Design: Cory Sauve",
+       x = "", y = "") +
+  theme_light() + 
+  theme(legend.position = "none", 
+        axis.ticks = element_blank(), 
+        axis.text.x = element_text(face = "bold", size = 40), 
+        axis.text.y = element_blank(), 
+        panel.border = element_blank(),
+        panel.grid = element_blank(), 
+        panel.background = element_rect(fill = "#EAD1B9"),
+        plot.background = element_rect(fill = "#EAD1B9", color = NA), 
+        plot.margin=unit(c(1,1,1,1),"cm"), 
+        plot.title = element_text(vjust = 10, hjust = 0.5, size = 35), 
+        plot.subtitle = element_text(hjust = 0.5, vjust = 2, size = 35), 
+        plot.caption = element_text(vjust = -20, hjust = 1.25, size = 30))
+
+ggsave(last_plot(), filename = here("figures/2021-11-15_Black-in-Data", "dubois4.png"), height = 6, width = 4, dpi = 500)
+```
+
+
+
+
+
