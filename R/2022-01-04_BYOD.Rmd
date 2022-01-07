@@ -1,0 +1,125 @@
+---
+title: "TidyTuesday - BYOD"
+author: "Cory Sauve"
+date: "1/6/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libs 
+```{r}
+library(tidyverse)
+library(here)
+library(gt)
+library(gtExtras)
+library(espnscrapeR)
+library(purrr)
+```
+
+# Import Data 
+```{r}
+# Make is easier to read all weekly csv's into one file
+read_csv_all <- function(path){
+  files <- dir(path, pattern = "*ppr.csv") # only want the weekly data. remove 'ppr' for all csv in dir
+  
+  data_frame(filename = files) %>% 
+    mutate(file_contents = map(filename, ~data.table::fread(file.path(path, .)))) %>%
+    unnest(cols = c(file_contents))
+}
+
+season_data <- read_csv(here("data/2022-01-04_BYOD", "total_season.csv"))
+weekly_data <- read_csv_all(here("data/2022-01-04_BYOD"))
+team_logos <- get_nfl_teams() %>% select(Team = team_abb, logo)
+```
+
+# Clean Data 
+
+## Weekly Data 
+```{r}
+weekly_data_clean <- weekly_data %>% 
+  mutate(
+    filename = str_sub(filename, end = 4),
+    filename = str_to_upper(filename), 
+    filename = str_remove(filename, "^\\_0")
+  ) %>% 
+  select(Player, Week = filename, Points) %>% 
+  pivot_wider(names_from = Week, values_from = Points)
+```
+
+## Join all data 
+```{r}
+tbl_data <- 
+  season_data %>% 
+  left_join(team_logos, by = "Team") %>% 
+  left_join(weekly_data_clean, by = "Player") %>% 
+  select(Rank, Player, logo, Position, Points, Avg, WK01:WK17)
+```
+
+# Table 
+```{r}
+tbl <- 
+  tbl_data %>% 
+  head(25) %>% 
+  gt() %>% 
+  text_transform(
+    locations = cells_body(c(logo)),
+    fn = function(x){
+      web_image(
+        url = x,
+        height = px(30)
+      )
+    }
+  ) %>% 
+  cols_align(
+    align = "center", 
+    columns = c(Rank, logo, Position, Points, Avg)
+  ) %>% 
+  cols_label(
+    logo = "Team", Avg = "PTS/GM", WK01 = "WK1", WK02 = "WK2", WK03 = "WK3",
+    WK04 = "WK4", WK05 = "WK5", WK06 = "WK6", WK07 = "WK7", WK08 = "WK8", WK09 = "WK9"
+  ) %>% 
+  data_color(
+    columns = c(WK01:WK17),
+    colors = scales::col_numeric(
+      palette = c(
+        "white", "#E61919", "#A11212"
+      ),
+      domain = range(0:60), 
+      na.color = "white", 
+    ), 
+    autocolor_text = FALSE
+  ) %>% 
+  fmt_missing(
+    columns = c(WK01:WK17), 
+    missing_text = ""
+  ) %>% 
+  gt_theme_538() %>% 
+  tab_style(
+    style = cell_borders(sides = "right", color = "black", 
+                         style = "solid", weight = px(3)),
+    locations = cells_body(
+      columns = c(Avg)
+    )
+  ) %>% 
+  tab_source_note(
+    source_note = md("**DATA: FantasyPros** | **DESIGN: Cory Sauve**")
+  ) %>% 
+
+  tab_header(
+    title = md("**2021 Fantasy Football Leaders**"), 
+    subtitle = md("**Top 25 PPR**")
+  ) %>% 
+  tab_spanner(
+    label = "Fantasy Points Per Week", 
+    columns = c(WK01:WK17)
+  ) %>% 
+  tab_options(
+    heading.title.font.size = 32, 
+    heading.subtitle.font.size = 24
+  )
+  
+gtsave(tbl, filename = here("figures/2022-01-04_BYOD", "ff_leaders.png"), vwidth = 1750)
+```

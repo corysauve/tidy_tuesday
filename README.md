@@ -10,6 +10,11 @@ My contributions to the [TidyTuesday](https://github.com/rfordatascience/tidytue
 
 ***
 
+### [2022-01](https://github.com/corysauve/tidytuesday/blob/main/figures/2022-01-04_BYOD): Bring Your Own Data
+
+![./figures/2022-01-04_BYOD/ff_leaders.png](https://github.com/corysauve/tidytuesday/blob/master/figures/2022-01-04_BYOD/ff_leaders.png)
+
+
 ### [2021-11](https://github.com/corysauve/tidytuesday/blob/main/figures/2021-11-15_Black-in-Data): #Black in Data Week - W.E.B Dubois' figures
 
 ![./figures/2021-11-15_Black-in-Data/dubois1.png](https://github.com/corysauve/tidytuesday/blob/master/figures/2021-11-15_Black-in-Data/dubois1.png)
