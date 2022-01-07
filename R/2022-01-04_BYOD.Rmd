@@ -109,8 +109,8 @@ tbl <-
   ) %>% 
 
   tab_header(
-    title = md("**2021 Fantasy Football Leaders**"), 
-    subtitle = md("**Top 25 PPR**")
+    title = md("**2021 Fantasy Football Leaderboard**"), 
+    subtitle = md("Top 25 PPR scorers through Week 17 of the NFL season")
   ) %>% 
   tab_spanner(
     label = "Fantasy Points Per Week", 
