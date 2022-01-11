@@ -1,0 +1,59 @@
+---
+title: "2022 Wk 2 - Bee Colony Loss"
+author: "Cory Sauve"
+date: "1/10/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Libs 
+```{r}
+library(tidyverse)
+library(here)
+library(rgdal)
+library(rgeos)
+```
+
+# Import data 
+```{r}
+# Bee data 
+colony <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-11/colony.csv')
+stressor <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-11/stressor.csv')
+
+# Hexbin map prep (if I want to use it) 
+us <- readOGR("data/2022-01-10_Bee-Colony-Loss/us_states_hexgrid.geojson")
+
+centers <- 
+  cbind.data.frame(
+    data.frame(gCentroid(us, byid = TRUE), id = us@data$iso3166_2)
+  )
+
+us_map <- fortify(us, region = "iso3166_2")
+
+# State abbrev for maps for eventual joining
+state_abb <- bind_cols(datasets::state.abb, datasets::state.name) %>% 
+  rename(state_abb = "...1", state = "...2")
+```
+
+# Clean data 
+```{r} 
+colony_clean <- 
+  colony %>% 
+  filter(
+    !year == "6/", 
+    !state == "United States") %>% 
+  left_join(state_abb, by = "state") 
+```
+
+# Hexbin Map 
+```{r}
+ggplot() + 
+  geom_map(data = us_map, map = us_map, aes(x = long, y = lat, map_id = id),color = "white", size = 0.5) +
+  geom_text(data = centers, aes(label = id, x = x, y = y), color = "white", size = 4)
+```
+
+
+
