@@ -13,47 +13,106 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(tidyverse)
 library(here)
-library(rgdal)
-library(rgeos)
+library(showtext)
 ```
 
 # Import data 
 ```{r}
-# Bee data 
-colony <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-11/colony.csv')
-stressor <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-11/stressor.csv')
-
-# Hexbin map prep (if I want to use it) 
-us <- readOGR("data/2022-01-10_Bee-Colony-Loss/us_states_hexgrid.geojson")
-
-centers <- 
-  cbind.data.frame(
-    data.frame(gCentroid(us, byid = TRUE), id = us@data$iso3166_2)
-  )
-
-us_map <- fortify(us, region = "iso3166_2")
-
-# State abbrev for maps for eventual joining
-state_abb <- bind_cols(datasets::state.abb, datasets::state.name) %>% 
-  rename(state_abb = "...1", state = "...2")
+#colony <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-11/colony.csv')
+#stressor <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-11/stressor.csv')
+stressor <- read_csv(here("data/2022-01-10_Bee-Colony-Loss", "stressor.csv"))
 ```
 
 # Clean data 
-```{r} 
-colony_clean <- 
-  colony %>% 
-  filter(
-    !year == "6/", 
-    !state == "United States") %>% 
-  left_join(state_abb, by = "state") 
-```
-
-# Hexbin Map 
 ```{r}
-ggplot() + 
-  geom_map(data = us_map, map = us_map, aes(x = long, y = lat, map_id = id),color = "white", size = 0.5) +
-  geom_text(data = centers, aes(label = id, x = x, y = y), color = "white", size = 4)
+stressor_clean <- 
+  stressor %>% 
+  filter(
+    year == "2020", 
+    stressor == "Varroa mites"
+  ) %>% 
+  mutate(
+    months = case_when(
+      months == "April-June" ~ "April through June", 
+      months == "January-March" ~ "January through March", 
+      months == "July-September" ~ "July through September", 
+      months == "October-December" ~ "October through December"
+    ), 
+    order = case_when(
+      months == "January through March" ~ 1, 
+      months == "April through June" ~ 2, 
+      months == "July through September" ~ 3, 
+      months == "October through December" ~ 4
+    ), 
+    months = fct_reorder(months, order)
+  )
+
+states <- 
+  map_data("state") %>% 
+  rename(state = region) %>% 
+  mutate(
+    state = str_to_title(state), 
+  ) 
+
+map_data <- 
+  states %>% 
+  left_join(stressor_clean, by = "state") %>% 
+  select(-subregion) %>% 
+  drop_na()
 ```
+ 
+# Figure
+```{r}
+font_add(family = "BellTopoSans", 
+         regular = "C:/Users/csauve/AppData/Local/Microsoft/Windows/Fonts/BellTopoSans-Regular.otf", 
+         bold = "C:/Users/csauve/AppData/Local/Microsoft/Windows/Fonts/BellTopoSans-Bold.otf")
 
+pal <- 
+  c(
+    "#F2D091", "#ED9A00", "#BA7900", "#6E5321", "#6E4700"
+  )
 
+plot <-
+  ggplot(map_data, aes(long, lat, group = group)) + 
+  geom_polygon(aes(fill = stress_pct), colour = "black") +
+  coord_map("conic", lat0 = 30) +
+  facet_wrap(~months) +
+  scale_fill_gradientn(name = "% of stressed colonies", colors = pal) +
+  theme_light() +
+  guides(
+    fill = guide_colorbar(
+      direction = "horizontal",
+      ticks.colour = "white",
+      ticks.linewidth = 2,
+      title.position = "top",
+      label.position = "bottom",
+      title.hjust = 0.5, 
+      title.vjust = -5, 
+      label.vjust = 8)
+  ) +
+  labs(
+    title = "It's time to be stressed about Varroa mite impacts in the U.S.", 
+    subtitle = "Percent of bee colonies affected by Varroa mites in 2020", 
+    caption = "Data: USDA | Design: Cory Sauve" 
+  ) +
+  theme(
+    text = element_text(family = "BellTopoSans"),
+    plot.title = element_text(size = 72, vjust = 10, hjust = .5, face = "bold"), 
+    plot.subtitle = element_text(size = 65, hjust = 0, vjust = 9),
+    plot.caption = element_text(size = 40, hjust = 1.22),
+    plot.margin = margin(t = 1.5, r = 0, b = 0, l = 0, unit = "cm"),
+    plot.background = element_rect(fill = "white", color = "white"),
+    strip.text = element_text(size = 60, color = "black"), 
+    strip.background = element_blank(), 
+    panel.grid = element_blank(), 
+    panel.border = element_blank(), 
+    axis.title = element_blank(), 
+    axis.ticks = element_blank(), 
+    axis.text = element_blank(),
+    legend.position = "bottom",
+    legend.text = element_text(size = 40), 
+    legend.title = element_text(size = 40),
+  )
 
+ggsave(last_plot(), filename = here("figures/2022-01-11_Bee-Colony-Loss", "bee_stress.png"), dpi = 500, height = 6, width = 7)
+```
