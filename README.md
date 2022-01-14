@@ -1,10 +1,12 @@
-<center><h1>tidytuesday</h1></center>
+<center>
+# tidytuesday
+</center>
 
 <br>
 
-<center>
+
 My contributions to [TidyTuesday](https://github.com/rfordatascience/tidytuesday) using the [`{tidyverse}`](https://www.tidyverse.org/)
-</center>
+
 <br>
 
 ***
