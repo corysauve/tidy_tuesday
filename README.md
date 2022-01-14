@@ -2,8 +2,6 @@
 
 My contributions to [TidyTuesday](https://github.com/rfordatascience/tidytuesday) using the [`{tidyverse}`](https://www.tidyverse.org/)
 
-<br>
-
 ***
 
 ### [2022-01-11](https://github.com/corysauve/tidytuesday/tree/master/R/2022-01-10_Bee-Colony-Loss.Rmd): U.S. Bee Colony Loss
