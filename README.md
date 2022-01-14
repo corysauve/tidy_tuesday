@@ -1,9 +1,4 @@
-<center>
 # tidytuesday
-</center>
-
-<br>
-
 
 My contributions to [TidyTuesday](https://github.com/rfordatascience/tidytuesday) using the [`{tidyverse}`](https://www.tidyverse.org/)
 
